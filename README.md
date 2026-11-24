@@ -9,3 +9,4 @@ Each one covers recon, exploitation, privilege escalation, root causes with fixe
 | [Simple CTF](tryhackme-simple-ctf.md) | TryHackMe | Easy | Anonymous FTP, CMS Made Simple SQLi (CVE-2019-9053), hash cracking, `sudo vim` |
 | [RootMe](tryhackme-rootme.md) | TryHackMe | Easy | Upload filter bypass (`.phtml`), PHP reverse shell, SUID python |
 | [Pickle Rick](tryhackme-pickle-rick.md) | TryHackMe | Easy | Creds in HTML source and robots.txt, command panel filter bypass, `sudo` NOPASSWD ALL |
+| [Startup](tryhackme-startup.md) | TryHackMe | Easy | Writable anonymous FTP → web shell, PCAP analysis (Wireshark), cron + writable script |
