@@ -161,7 +161,20 @@ echo $LIST > /home/lennie/scripts/startup_list.txt
 | `~/scripts/planner.sh` | root | Run periodically by root (cron) |
 | `/etc/print.sh` | **lennie** | Called by `planner.sh`, but **lennie can edit it** |
 
-`/etc/print.sh` only did `echo "Done!"`. Whatever goes into it runs **as root** the next time cron fires `planner.sh`. You can confirm that the job is running by watching the modification time of `startup_list.txt` (`ls -la --time-style=full-iso`), or catch it live with **pspy**. I didn't measure the exact interval.
+`/etc/print.sh` only did `echo "Done!"`. Whatever goes into it runs **as root** the next time cron fires `planner.sh`.
+
+**How often?** The job isn't in `/etc/crontab` or `/etc/cron.d/`, which leaves root's personal crontab, and that one isn't readable. The interval can still be worked out from the side effect: `planner.sh` rewrites `startup_list.txt`, so watch its modification time:
+
+```bash
+watch -n 5 'ls -la --time-style=full-iso /home/lennie/scripts/startup_list.txt'
+```
+
+```
+-rw-r--r-- 1 root root 1 2026-11-24 17:22:01.728 ... startup_list.txt
+-rw-r--r-- 1 root root 1 2026-11-24 17:23:01.... ... startup_list.txt
+```
+
+The file is owned by **root**, which confirms who runs the script. It changes at **:01 of every minute**, so the job runs every minute (`* * * * *`). **pspy** would show the same thing live.
 
 I appended a bash reverse shell to `/etc/print.sh`:
 
