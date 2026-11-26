@@ -13,3 +13,4 @@ Each one covers recon, exploitation, privilege escalation, root causes with fixe
 | [Bounty Hacker](tryhackme-bounty-hacker.md) | TryHackMe | Easy | Anonymous FTP, SSH brute force with a found wordlist, `sudo tar` |
 | [Agent Sudo](tryhackme-agent-sudo.md) | TryHackMe | Easy | User-Agent fuzzing, FTP brute force, steganography (binwalk, steghide), ZIP cracking, sudo `!root` bypass (CVE-2019-14287) |
 | [Ignite](tryhackme-ignite.md) | TryHackMe | Easy | Fuel CMS unauthenticated RCE (CVE-2018-16763), reverse shell through PHP `system()`, DB creds in config file, password reuse |
+| [Wgel CTF](tryhackme-wgel-ctf.md) | TryHackMe | Easy | HTML comment leak, nested directory enumeration, exposed SSH private key, `sudo wget` file read |
