@@ -131,7 +131,7 @@ steghide: can not uncompress data. compressed data is corrupted.
 
 With an empty passphrase it fails, which means **there is something embedded, protected with a passphrase**.
 
-**Dead end:** with no passphrase, I left the image and ran gobuster, hoping to find the passphrase on the web. Nothing useful turned up. It returned only the standard Apache `403`s (`.ht*`, `server-status`). The pattern was one I'd seen before (an encrypted ZIP in Agent Sudo): a file protected by an unknown password means **cracking it offline**. I just didn't know the tool for steghide.
+**Dead end:** with no passphrase, I left the image and ran gobuster. That part was reasonable: I hadn't enumerated the web yet, and in other rooms a password was sitting in a web file. It returned only the standard Apache `403`s (`.ht*`, `server-status`). The real mistake was assuming the passphrase couldn't be cracked because I didn't know a tool for it. A file protected by a password, sitting on my own machine, can always be brute-forced: with a dedicated tool or with a plain loop. The better move was to run both at once, gobuster against the web in one terminal and offline cracking in another.
 
 ### Cracking the passphrase — stegseek
 
@@ -143,6 +143,14 @@ stegseek brooklyn99.jpg /usr/share/wordlists/rockyou.txt
 ```
 
 (I ran it without the wordlist argument; stegseek uses rockyou by default.)
+
+Without stegseek, steghide itself in a loop does the same, only slower:
+
+```bash
+while read p; do
+  steghide extract -sf brooklyn99.jpg -p "$p" -f 2>/dev/null && echo "FOUND: $p" && break
+done < /usr/share/wordlists/rockyou.txt
+```
 
 ```
 [i] Found passphrase: "<redacted>"
@@ -217,7 +225,8 @@ Path 2: nmap → port 80 → HTML comment "steganography"
 
 - **Look at every open port**, even after one path works. Here port 80 was a whole second path to root.
 - **Read who a note is about, not only who wrote it**: here the target was the person mentioned.
-- **A file protected by an unknown password means offline cracking**: `zip2john` + john for ZIP, **stegseek** for steghide.
+- **A local file protected by a password can always be brute-forced**, with a dedicated tool (`zip2john` + john, **stegseek**) or a loop. Not knowing the tool doesn't mean it can't be done.
+- **Two valid leads, one of them offline? Run both in parallel.**
 - **steghide failing with an empty passphrase still tells you something**: data is there.
 - **Each GTFOBins binary has its own escape**: `!` works in less and vim, not in nano.
 - **Offline work doesn't need the target**: when a machine expires, only the steps that touch it need repeating.
