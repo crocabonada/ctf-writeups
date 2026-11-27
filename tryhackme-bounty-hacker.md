@@ -92,7 +92,7 @@ sudo tar cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh
 root
 ```
 
-**My mistake:** the first time I ran it **without `sudo`** and got a shell as lin. The privilege from `sudo -l` only applies when you call the binary through sudo. That's what the GTFOBins tabs mean:
+**Dead end:** the first time I ran it **without `sudo`** and got a shell as lin. The privilege from `sudo -l` only applies when you call the binary through sudo. That's what the GTFOBins tabs mean:
 
 | Tab | How to run it | What you get |
 |---|---|---|

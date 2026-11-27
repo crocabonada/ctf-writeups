@@ -91,8 +91,6 @@ Two services to try: SSH or FTP. My instinct was SSH, but FTP was the better cho
 hydra -l chris -P /usr/share/wordlists/rockyou.txt -t 16 ftp://<TARGET>
 ```
 
-**My mistake:** I first wrote `-s 2222`, copied from a previous machine where SSH was on a non-standard port. FTP here is on 21, so `-s` isn't needed.
-
 ```
 [21][ftp] host: <TARGET>   login: chris   password: <redacted>
 ```
@@ -118,7 +116,7 @@ Agent C
 
 Hidden data in images. I went through the usual tools from cheapest to most specific: `file`, `exiftool`, `strings`, `binwalk`, `steghide`.
 
-**My mistake:** I ran several tools on both images in one go and the outputs got mixed. I thought `To_agentR.txt` was inside the JPG, but those `strings` lines came from the PNG. One tool, one file at a time.
+**Dead end:** I ran several tools on both images in one go and the outputs got mixed. I thought `To_agentR.txt` was inside the JPG, but those `strings` lines came from the PNG. One tool, one file at a time.
 
 The `strings cutie.png` output showed `IEND` (the marker that ends a PNG) **followed by more data** and a filename: something appended after the image. `binwalk` confirms it:
 
@@ -204,7 +202,7 @@ User james may run the following commands on agent-sudo:
     (ALL, !root) /bin/bash
 ```
 
-**My mistake:** I read this as "can do everything as root". It's the opposite. The parenthesis says **which users** you can run the binary as: `ALL` = any user, `!root` = **except root**. On paper, this rule exists to stop you from becoming root.
+**Dead end:** I read this as "can do everything as root". It's the opposite. The parenthesis says **which users** you can run the binary as: `ALL` = any user, `!root` = **except root**. On paper, this rule exists to stop you from becoming root.
 
 A rule that unusual is a hint to check the sudo version:
 
@@ -220,7 +218,7 @@ Sudo version 1.8.21p2
 searchsploit sudo
 ```
 
-Picking the right entry took me three tries, and the mistakes are worth writing down:
+Picking the right entry took me three tries, and the dead ends are worth writing down:
 
 | Candidate | Why it's wrong (or right) |
 |---|---|

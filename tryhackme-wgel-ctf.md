@@ -46,13 +46,13 @@ curl -s http://<TARGET> | grep -n '<!--'
 
 A likely system username: **jessie**.
 
-**My mistake:** my first attempt used double quotes, `grep -n "<!--"`, and returned nothing. In zsh and bash, `!` inside double quotes triggers **history expansion**: the shell replaced it with a previous command before grep ever ran. Single quotes pass the pattern untouched.
+**Dead end:** my first attempt used double quotes, `grep -n "<!--"`, and returned nothing. In zsh and bash, `!` inside double quotes triggers **history expansion**: the shell replaced it with a previous command before grep ever ran. Single quotes pass the pattern untouched.
 
 ### Enumeration in depth
 
 Gobuster on the root found `/sitemap/`, a website template. I dismissed it as "generic" and assumed gobuster had already looked inside.
 
-**My mistake:** gobuster is **not recursive**. It only tests one level under the URL you give it. Scanning `/sitemap/` itself:
+**Dead end:** gobuster is **not recursive**. It only tests one level under the URL you give it. Scanning `/sitemap/` itself:
 
 ```bash
 gobuster dir -u http://<TARGET>/sitemap/ -w /usr/share/wordlists/dirb/common.txt
@@ -70,11 +70,10 @@ chmod 600 id_rsa
 ssh -i id_rsa jessie@<TARGET>
 ```
 
-Getting here took three tries, each with a clear message I had to read:
+Two things worth knowing here:
 
-1. `Identity file id_rsa not accessible: No such file or directory`: I had copied the key by hand into `clauprivada.txt` with nano, but pointed `-i` at a file that didn't exist. When the key can't be used, SSH silently falls back to **asking for a password**, which looks like the key is wrong.
-2. `Permissions 0664 for 'clauprivada.txt' are too open ... This private key will be ignored`: SSH refuses private keys other users could read. `chmod 600` = read/write for the owner only.
-3. Logged in as jessie.
+- `Permissions 0664 for '<key>' are too open ... This private key will be ignored`: SSH refuses private keys other users could read. `chmod 600` = read/write for the owner only.
+- When the key can't be used (bad permissions, wrong path), SSH silently falls back to **asking for a password**, which looks like the key is wrong. The real reason is in the line above the prompt.
 
 Downloading with `wget` is safer than copy-pasting: a missing line break or stray space corrupts the key.
 
@@ -82,7 +81,7 @@ The user flag is in `~/Documents/user_flag.txt`.
 
 ## 4. Privilege escalation — sudo wget
 
-**My mistake:** I was going to skip `sudo -l` because I didn't know jessie's password. But `sudo -l` doesn't always ask for one, and `NOPASSWD` rules show up without it. It costs nothing to try.
+**Dead end:** I was going to skip `sudo -l` because I didn't know jessie's password. But `sudo -l` doesn't always ask for one, and `NOPASSWD` rules show up without it. It costs nothing to try.
 
 ```
 User jessie may run the following commands on CorpOne:
